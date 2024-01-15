@@ -38,30 +38,32 @@ def bilinear_interpolate(cwt, target_shape):
 
 //input_image (J rows, N columns) 
 void call_bilinear_interpolate(double *input_image, double *input_image_interpolated, int N, int J, int new_width, int new_height) {
-
     for (int i = 0; i < new_width; i++) {
         for (int j = 0; j < new_height; j++) {
-
-            // Calculate the position in the original array
-            double x = (i * (N - 1)) / (new_width );
-            double y = (j * (J - 1)) / (new_height );
+            // Adjusted calculations to ensure coordinates are within bounds
+            double x = (i / (double)(new_width - 1)) * (N - 1);
+            double y = (j / (double)(new_height - 1)) * (J - 1);
 
             int x1 = (int) x;
             int y1 = (int) y;
-            int x2 = fmin(x1 + 1, N - 1);
-            int y2 = fmin(y1 + 1, J - 1);
+            int x2 = fmin(x1 + 1, N);
+            int y2 = fmin(y1 + 1, J);
 
-            // Calculate fractions
             double wa = (x2 - x) * (y2 - y);
             double wb = (x - x1) * (y2 - y);
             double wc = (x2 - x) * (y - y1);
             double wd = (x - x1) * (y - y1);
 
-            // Linearly interpolate using the four nearest neighbors
             int index = i * new_height + j;
-            
+            int input_index1 = x1 * J + y1;
+            int input_index2 = x2 * J + y1;
+            int input_index3 = x1 * J + y2;
+            int input_index4 = x2 * J + y2;
 
-            input_image_interpolated[index] = wa * input_image[x1 * J + y1] + wb * input_image[x2 * J + y1] + wc * input_image[x1 * J + y2] + wd * input_image[x2 * J + y2];
+            input_image_interpolated[index] = wa * input_image[input_index1] +
+                                              wb * input_image[input_index2] +
+                                              wc * input_image[input_index3] +
+                                              wd * input_image[input_index4];
         }
     }
 }
