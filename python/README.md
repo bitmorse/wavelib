@@ -17,3 +17,7 @@ make
 ```
 python test.py
 ```
+
+
+
+On Apple Silicon, you may need to set the env var CMAKE_HOST_SYSTEM_PROCESSOR to arm64.
