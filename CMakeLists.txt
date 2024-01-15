@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 
 set(PROJECT_NAME wavelib)
 project(${PROJECT_NAME} C)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(GNUInstallDirs)
 
