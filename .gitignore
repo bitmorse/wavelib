@@ -34,3 +34,18 @@ language.settings.xml
 
 #wavelib-specific
 denoised.txt
+
+
+
+__pycache__/
+test/cwttest
+test/denoisetest
+test/dwpttest
+test/dwt2test
+test/dwttest
+test/modwt2test
+test/modwtdenoisetest
+test/modwttest
+test/swt2test
+test/swttest
+test/wtreetest
