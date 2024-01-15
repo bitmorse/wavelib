@@ -9,6 +9,7 @@ class WavelibH:
         # Define the argument types for the call_cwt function
         self.lib.call_cwt.argtypes = [
             np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),  # signal
+            np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),
             ctypes.c_float,  # param
             ctypes.c_int,    # N
             ctypes.c_float,  # dt
@@ -24,29 +25,16 @@ class WavelibH:
         signal = np.array(signal, dtype=np.double)
 
         # Allocate memory for the real and imaginary parts of the output
-        real_output = np.empty(N * J, dtype=np.double)
-        imag_output = np.empty(N * J, dtype=np.double)
-
-        # Adjust the argtypes for the modified function
-        self.lib.call_cwt.argtypes = [
-            np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),
-            ctypes.c_float,
-            ctypes.c_int,
-            ctypes.c_float,
-            ctypes.c_int,
-            np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),
-            np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS')
-        ]
+        magnitude_output = np.empty(N * J, dtype=np.double)
 
         # Call the C function
-        self.lib.call_cwt(signal, param, N, dt, J, real_output, imag_output)
+        self.lib.call_cwt(signal,magnitude_output, param, N, dt, J)
         
-        #reshape outputs
-        real_output = real_output.reshape((J, N))
-        imag_output = imag_output.reshape((J, N))
+        #reshape output
+        magnitude_output = magnitude_output.reshape((J, N))
 
         # Return the real and imaginary parts
-        return real_output, imag_output
+        return magnitude_output
     
     #(double *input_image, double *input_image_interpolated, int N, int J, int new_width, int new_height) {
     def bilinear_interpolate(self, input_image, N, J, new_width, new_height):
@@ -67,7 +55,7 @@ class WavelibH:
         ]
         
         # Call the C function
-        self.lib.call_bilinear_interpolate(input_image,output, N, J, new_width, new_height)
+        self.lib.call_bilinear_interpolate(input_image, output, N, J, new_width, new_height)
         
         #reshape outputs
         output = output.reshape((new_height, new_width))

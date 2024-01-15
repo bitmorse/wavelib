@@ -68,7 +68,7 @@ void call_bilinear_interpolate(double *input_image, double *input_image_interpol
     }
 }
 
-void call_cwt(double *signal, float param, int N, float dt, int J, double *real_output, double *imag_output) {
+void call_cwt(double *signal, double *magnitude_output, float param, int N, float dt, int J) {
     const char* wave = "morl";  // Morlet wavelet
     cwt_object obj = cwt_init(wave, param, N, dt, J);
 
@@ -79,8 +79,10 @@ void call_cwt(double *signal, float param, int N, float dt, int J, double *real_
     for (int j = 0; j < obj->J; j++) {
         for (int i = 0; i < N; i++) {
             int index = j * N + i;
-            real_output[index] = obj->output[index].re;
-            imag_output[index] = obj->output[index].im;
+
+
+            magnitude_output[index] = (sqrt(obj->output[index].re * obj->output[index].re +
+                                      obj->output[index].im * obj->output[index].im));
         }
     }
 }
