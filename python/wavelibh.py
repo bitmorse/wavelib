@@ -10,6 +10,7 @@ class WavelibH:
         self.lib.call_cwt.argtypes = [
             np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),  # signal
             np.ctypeslib.ndpointer(dtype=np.double, ndim=1, flags='C_CONTIGUOUS'),
+            ctypes.c_int,  # is linear scale?
             ctypes.c_float,  # param
             ctypes.c_int,    # N
             ctypes.c_float,  # dt
@@ -19,7 +20,7 @@ class WavelibH:
         # Define the return type for the call_cwt function
         self.lib.call_cwt.restype = None
         
-    def cwt(self, signal, param, dt, J):
+    def cwt(self, signal, linear, param, dt, J):
         N = len(signal)
         # Ensure the signal is a numpy array with dtype np.double
         signal = np.array(signal, dtype=np.double)
@@ -28,7 +29,7 @@ class WavelibH:
         magnitude_output = np.empty(N * J, dtype=np.double)
 
         # Call the C function
-        self.lib.call_cwt(signal,magnitude_output, param, N, dt, J)
+        self.lib.call_cwt(signal,magnitude_output, linear, param, N, dt, J)
         
         #reshape output
         magnitude_output = magnitude_output.reshape((J, N))
@@ -70,12 +71,9 @@ if __name__ == '__main__':
     param = 5
     dt = 1
     J = 10
+    linear = 0
     
     wvt = WavelibH('./libwavelibwrapper.so')    
-    re, im = wvt.cwt(signal, param, dt, J)
+    magnitude = wvt.cwt(signal, linear, param, dt, J)
     
-    print(re.shape)
-    print(im.shape)
-    
-    magnitude = np.sqrt(re**2 + im**2)
     print(magnitude)

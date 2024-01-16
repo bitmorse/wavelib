@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "wavelib.h"
 
@@ -68,9 +70,17 @@ void call_bilinear_interpolate(double *input_image, double *input_image_interpol
     }
 }
 
-void call_cwt(double *signal, double *magnitude_output, float param, int N, float dt, int J) {
-    const char* wave = "morl";  // Morlet wavelet
+void call_cwt(double *signal, double *magnitude_output, int linear, float param, int N, float dt, int J) {
+    const char *wave = "morl";  // Morlet wavelet
+	const char *type = "pow";
+
+    if (linear) {
+        type = "lin";
+    }
+
     cwt_object obj = cwt_init(wave, param, N, dt, J);
+	strcpy(obj->type,type);
+
 
     // Perform the Continuous Wavelet Transform
     cwt(obj, signal);
