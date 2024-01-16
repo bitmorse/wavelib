@@ -70,7 +70,15 @@ void call_bilinear_interpolate(double *input_image, double *input_image_interpol
     }
 }
 
-void call_cwt(double *signal, double *magnitude_output, int linear, float param, int N, float dt, int J) {
+/*
+s0 is the smallest scale, 
+while dj is the separation between scales. 
+Dj can also be seen as a measure of resolution which is calculated as dj = 1.0 
+Number of subscales so smaller value of dj corresponds to higher resolution within a scale.
+type accepts “pow”/”power” or “lin”/”linear” as input values, power is the base of power
+ if “pow”/”power' is selected and is ignored if the input is “lin”. Power of N scale calculation.
+ */
+void call_cwt(double *signal, double *magnitude_output, float s0, float dj, int linear, int power, float param, int N, float dt, int J) {
     const char *wave = "morl";  // Morlet wavelet
 	const char *type = "pow";
 
@@ -79,7 +87,16 @@ void call_cwt(double *signal, double *magnitude_output, int linear, float param,
     }
 
     cwt_object obj = cwt_init(wave, param, N, dt, J);
-	strcpy(obj->type,type);
+
+    setCWTScales(obj, s0, dj, type, power);
+    /*
+    printf("J: %d\n", obj->J);
+    printf("dt: %f\n", obj->dt);
+    printf("dj: %f\n", obj->dj);
+    printf("s0: %f\n", obj->s0);
+    printf("pow: %i\n", obj->pow);
+    printf("type: %s\n", obj->type);
+    */
 
 
     // Perform the Continuous Wavelet Transform
